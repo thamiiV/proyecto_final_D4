@@ -38,7 +38,6 @@ int main() {
     // se usa un bucle para asegurar que la entrada sea un número flotante
     while (scanf("%f", &miCurso.nota) != 1) {
         printf("Entrada inválida. Por favor, ingrese un número: ");
-        // limpiar el buffer de entrada para evitar un bucle infinito
         while (getchar() != '\n');
     }
 
