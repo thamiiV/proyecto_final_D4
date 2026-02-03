@@ -1,61 +1,73 @@
 #include <stdio.h>
-#include <stdlib.h> 
+#include <string.h>
 
-// defini una estructura para almacenar la informacion del curso
+#define MAX_CURSOS 10
+#define MAX_NOTAS 5
+
+// Estructura para organizar los datos
 struct Curso {
     char nombre[50];
-    float nota;
+    float notas[MAX_NOTAS];
+    int cantidadNotas;
 };
 
 int main() {
-    // se declaro una variable para la estructura del curso
-    struct Curso miCurso;
+    struct Curso academia[MAX_CURSOS];
+    int totalCursos = 0;
+    int opcion;
 
-    printf("Administrador de Notas de Cursos\n");
-    printf("Registro de un nuevo curso y nota\n");
-    printf("----------------------------------------\n\n");
+    do {
+        printf("\n--- ADMINISTRADOR DE NOTAS ---");
+        printf("\n1. Registrar nuevo curso y notas");
+        printf("\n2. Mostrar cursos registrados");
+        printf("\n3. Salir");
+        printf("\nSeleccione una opcion: ");
+        scanf("%d", &opcion);
+        getchar(); // Limpiar el buffer del salto de linea
 
-    // 1. registrar el nombre del curso
-    printf("Ingrese el nombre del curso (max 49 caracteres): ");
-    // Usamos fgets para leer la línea de entrada, incluyendo espacios
-    // y para prevenir un desbordamiento de buffer
-    if (fgets(miCurso.nombre, sizeof(miCurso.nombre), stdin) == NULL) {
-        perror("Error al leer el nombre del curso");
-        return 1;
-    }
-    // eliminar el salto de línea que añade fgets si está presente
-    int len = 0;
-    while (miCurso.nombre[len] != '\0') {
-        if (miCurso.nombre[len] == '\n') {
-            miCurso.nombre[len] = '\0';
-            break;
+        switch(opcion) {
+            case 1:
+                if (totalCursos < MAX_CURSOS) {
+                    printf("\nNombre del curso: ");
+                    fgets(academia[totalCursos].nombre, 50, stdin);
+                    academia[totalCursos].nombre[strcspn(academia[totalCursos].nombre, "\n")] = 0;
+
+                    printf("Cuantas notas desea registrar para este curso? (Max %d): ", MAX_NOTAS);
+                    scanf("%d", &academia[totalCursos].cantidadNotas);
+
+                    for (int i = 0; i < academia[totalCursos].cantidadNotas; i++) {
+                        printf("  Ingrese nota %d: ", i + 1);
+                        scanf("%f", &academia[totalCursos].notas[i]);
+                    }
+                    
+                    totalCursos++;
+                    printf("\nCurso registrado con exito.\n");
+                } else {
+                    printf("\n Error: Limite de cursos alcanzado.\n");
+                }
+                break;
+
+            case 2:
+                printf("\n--- LISTADO DE CURSOS ---");
+                for (int i = 0; i < totalCursos; i++) {
+                    printf("\nCurso: **%s**", academia[i].nombre);
+                    printf("\nNotas: ");
+                    for (int j = 0; j < academia[i].cantidadNotas; j++) {
+                        printf("[%.2f] ", academia[i].notas[j]);
+                    }
+                    printf("\n-----------------------");
+                }
+                if (totalCursos == 0) printf("\nNo hay cursos registrados.\n");
+                break;
+
+            case 3:
+                printf("Saliendo del programa...\n");
+                break;
+
+            default:
+                printf("Opcion no valida.\n");
         }
-        len++;
-    }
-
-    // 2. registrar la nota del curso
-    printf("Ingrese la nota del curso (ej. 15.5): ");
-    // se usa un bucle para asegurar que la entrada sea un número flotante
-    while (scanf("%f", &miCurso.nota) != 1) {
-        printf("Entrada inválida. Por favor, ingrese un número: ");
-        while (getchar() != '\n');
-    }
-
-    // 3. mostrar los datos registrados para confirmación
-    
-    printf("Datos Registrados Correctamente:\n");
-    printf("   Curso: **%s**\n", miCurso.nombre);
-    printf("   Nota: **%.2f**\n", miCurso.nota);
-
-    // pausar la consola en Windows o Linux para ver la salida
-    #ifdef _WIN32
-        system("pause");
-    #elif defined(__linux__) || defined(__APPLE__)
-        printf("Presione ENTER para continuar...\n");
-        // limpiar buffer y esperar una entrada
-        while (getchar() != '\n');
-        getchar();
-    #endif
+    } while (opcion != 3);
 
     return 0;
 }
